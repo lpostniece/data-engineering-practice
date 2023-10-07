@@ -1,6 +1,9 @@
 import os.path
-
 import requests
+
+from zipfile import ZipFile
+from io import BytesIO
+
 
 download_uris = [
     "https://divvy-tripdata.s3.amazonaws.com/Divvy_Trips_2018_Q4.zip",
@@ -23,8 +26,8 @@ def download_unzip(uri: str, directory: str) -> bool:
     file_name = get_file_name(uri)
     if r.status_code == 200 and r.headers['content-type'] == 'application/zip':
         zip_content = r.content
-        with open(os.path.join(directory, file_name), 'wb') as file:
-            file.write(zip_content)
+        zip_file = ZipFile(BytesIO(zip_content))
+        zip_file.extractall(directory)
         return True
     else:
         return False
